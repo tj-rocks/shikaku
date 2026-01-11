@@ -251,13 +251,13 @@ class SocialQAScreen(Screen):
                 self.button_text = "次へ"
                 self.is_correct = True
             else:
-                FeedbackPopup(message="ちがうよ", is_correct=False).open()
+                FeedbackPopup(message= common.get_texts("wrong_answer"), is_correct=False).open()
         except Exception as e:
-            FeedbackPopup(message="文字をいれてね", is_correct=False).open()
+            FeedbackPopup(message=common.get_texts("try_input"), is_correct=False).open()
 
     def next_question(self, answer_input):
         self.is_correct = False
-        self.button_text = "けってい"
+        self.button_text = common.get_texts("determine_button")
         answer_input.text = ""
         self.create_question()
 

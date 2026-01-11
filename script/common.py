@@ -122,4 +122,5 @@ def get_texts():
         "wrong_answer": "ちがうよ",
         "try_again": "やりなおう",
         "try_input": "こたえをいれてね",
+        "determine_button": "けってい"
     }
