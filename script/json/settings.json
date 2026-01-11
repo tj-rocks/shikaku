@@ -1,4 +1,5 @@
 {
     "difficulty": 1,
-    "username": null
+    "username": null,
+    "result_screen_interval": 1
 }

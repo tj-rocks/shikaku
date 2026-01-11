@@ -761,16 +761,17 @@
             height: dp(50)
             bold: True
 
+        # 難易度カード
         CardLayout:
             size_hint_y: None
-            height: 450
+            height: dp(250)
             padding: 20
             spacing: 20
             
             BoxLayout:
                 orientation: "horizontal"
                 spacing: 20
-                size_hint_y: 0.2
+                size_hint_y: 0.4
                 
                 Label:
                     text: "レベル："
@@ -792,23 +793,30 @@
                 value: root.difficulty_value
                 on_value: root.on_value_change(self, self.value)
                 cursor_size: (40, 40)
-                size_hint_y: 0.2
+                size_hint_y: 0.4
 
             Label:
                 text: "（レベル1〜6）"
                 font_size: dp(20)
                 color: hex("#7F8C8D")
-                size_hint_y: 0.1
+                size_hint_y: 0.2
 
-            Widget:
-                size_hint_y: None
-                height: dp(20)
+        # ユーザー名カード
+        CardLayout:
+            size_hint_y: None
+            height: dp(220)
+            padding: 20
+            spacing: 10
 
             Label:
                 text: "おなまえ：" + root.username_text
                 font_size: dp(24)
                 color: TEXT_COLOR
-                size_hint_y: 0.15
+                size_hint_y: None
+                height: dp(40)
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
 
             Widget:
                 size_hint_y: None

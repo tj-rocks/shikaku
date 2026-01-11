@@ -68,7 +68,8 @@ class FeedbackPopup(Popup):
         self.content = content
 
     def on_open(self):
-        Clock.schedule_once(self.dismiss, 2)
+        interval_sec = common.get_settings("result_screen_interval")
+        Clock.schedule_once(self.dismiss, interval_sec)
 
 
 # --------------------
