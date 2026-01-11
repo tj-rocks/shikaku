@@ -1,0 +1,840 @@
+#:set DEFAULT_FONT "fonts/NotoSansJP-VariableFont_wght.ttf"
+#:import hex kivy.utils.get_color_from_hex
+#:import dp kivy.metrics.dp
+
+# 色の定義
+#:set BG_COLOR hex("#FFFFFF")
+#:set PRIMARY_COLOR hex("#000000")
+#:set SECONDARY_COLOR hex("#808080")
+#:set TEXT_COLOR hex("#000000")
+#:set WHITE_COLOR hex("#FFFFFF")
+#:set ACCENT_COLOR hex("#000000")
+
+<Label>:
+    font_name: DEFAULT_FONT
+    color: TEXT_COLOR
+
+<RoundedButton@Button>:
+    background_color: 0, 0, 0, 0
+    background_normal: ''
+    color: TEXT_COLOR
+    font_name: DEFAULT_FONT
+    font_size: dp(24)
+    bold: True
+    canvas.before:
+        Color:
+            rgba: PRIMARY_COLOR
+        Line:
+            width: dp(2)
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(20))
+        Color:
+            rgba: (0, 0, 0, 0.1) if self.state == 'down' else (0, 0, 0, 0)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(20)]
+
+<CardLabel@Label>:
+    font_name: DEFAULT_FONT
+    color: TEXT_COLOR
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(15)]
+
+<CardLayout@BoxLayout>:
+    orientation: "vertical"
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(15)]
+
+<TextInput>:
+    font_name: DEFAULT_FONT
+    background_normal: ''
+    background_active: ''
+    background_color: BG_COLOR
+    foreground_color: TEXT_COLOR
+    padding: [dp(10), dp(10)]
+    canvas.after:
+        Color:
+            rgba: PRIMARY_COLOR
+        Line:
+            width: dp(2)
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(10))
+
+<ResetConfirmPopup>:
+    title: "かくにん"
+    title_size: 24
+    size_hint: 0.8, 0.4
+    auto_dismiss: False
+    background: ""
+    background_color: [1, 1, 1, 1]
+    separator_color: PRIMARY_COLOR
+    target_screen: None
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 20
+        canvas.before:
+            Color:
+                rgba: WHITE_COLOR
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [20]
+        
+        Label:
+            text: "ほんとうにリセットしてもいい？"
+            font_size: dp(24)
+            color: TEXT_COLOR
+        
+        BoxLayout:
+            spacing: 20
+            size_hint_y: None
+            height: dp(60)
+            
+            RoundedButton:
+                text: "はい"
+                on_release: 
+                    root.target_screen.do_reset()
+                    root.dismiss()
+
+            RoundedButton:
+                text: "いいえ"
+                on_release: root.dismiss()
+
+# --------------------
+# SplashScreen
+# --------------------
+<SplashScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 30
+
+        Widget:
+            size_hint_y: 1
+
+        Image:
+            source: "images/logo.png"
+            size_hint: None, None
+            size: 300, 300
+            pos_hint: {'center_x': 0.5}
+
+        Button:
+            text: "はじめる"
+            font_size: dp(32)
+            color: PRIMARY_COLOR
+            background_normal: ''
+            background_color: 0, 0, 0, 0
+            bold: True
+            size_hint: None, None
+            size: 240, dp(80)
+            pos_hint: {'center_x': 0.5}
+            on_press: app.root.current = "main"
+
+        Widget:
+            size_hint_y: 1
+
+# --------------------
+# MainScreen
+# --------------------
+<MainScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 30
+
+        Label:
+            text: "シカクノ問題"
+            font_name: "fonts/Kosugi-Regular.ttf"
+            font_size: dp(56)
+            color: PRIMARY_COLOR
+            outline_width: dp(2)
+            outline_color: WHITE_COLOR
+            bold: True
+            size_hint_y: None
+            height: dp(100)
+
+        GridLayout:
+            cols: 1
+            spacing: 20
+            size_hint_y: 1
+            
+            RoundedButton:
+                text: "算数 (さんすう)"
+                font_size: dp(32)
+                on_press: app.root.current = "math"
+
+            RoundedButton:
+                text: "社会 (しゃかい)"
+                font_size: dp(32)
+                on_press: app.root.current = "social"
+
+            RoundedButton:
+                text: "理科 (りか)"
+                font_size: dp(32)
+                on_press: app.root.current = "science"
+
+            BoxLayout:
+                spacing: 20
+                size_hint_y: None
+                height: dp(80)
+                
+                RoundedButton:
+                    text: "ポイント"
+                    font_size: dp(32)
+                    on_press: app.root.current = "reward"
+
+                RoundedButton:
+                    text: "せってい"
+                    font_size: dp(32)
+                    on_press: app.root.current = "settings"
+
+# --------------------
+# MathScreen
+# --------------------
+<MathScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+
+        BoxLayout:  # 上部切替ボタン
+            size_hint_y: None
+            height: dp(80)
+            spacing: 15
+            padding: [15, 10]
+            
+            RoundedButton:
+                text: "計算問題"
+                on_press: math_inner.current = "calc"
+                font_size: dp(20)
+            
+            RoundedButton:
+                text: "文章題"
+                on_press: math_inner.current = "text"
+                font_size: dp(20)
+            
+            RoundedButton:
+                text: "戻る"
+                on_press: app.root.current = "main"
+                font_size: dp(20)
+
+        ScreenManager:
+            id: math_inner
+            MathCalcScreen:
+                name: "calc"
+            MathTextScreen:
+                name: "text"
+
+# --------------------
+# 個別問題画面
+# --------------------
+<MathCalcScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: [40, dp(5), 40, dp(75)]
+        spacing: 15
+
+
+
+        Label:
+            id: header_label
+            text: "もんだい"
+            font_size: dp(24)
+            color: PRIMARY_COLOR
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        CardLabel:
+            text: root.question_text
+            font_size: dp(64)
+            size_hint_y: None
+            height: 150
+            bold: True
+
+        Widget:
+            size_hint_y: 1
+
+        TextInput:
+            id: answer_input
+            font_size: dp(40)
+            multiline: False
+            input_filter: "int"
+            hint_text: "こたえをいれてね"
+            size_hint_y: None
+            height: dp(80)
+            halign: 'center'
+
+        RoundedButton:
+            id: submit_btn
+            text: root.button_text
+            font_size: dp(32)
+            on_press: root.on_button_press(answer_input)
+            size_hint_y: None
+            height: dp(80)
+
+
+
+
+
+<MathTextScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 15
+
+        Label:
+            id: header_label
+            text: "もんだい"
+            font_size: dp(24)
+            color: PRIMARY_COLOR
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        CardLabel:
+            text: root.question_text
+            font_size: dp(28)
+            text_size: self.width - 40, None
+            size_hint_y: 0.7
+            halign: 'left'
+            valign: 'top'
+            padding: [20, 20]
+
+        TextInput:
+            id: answer_input
+            font_size: dp(32)
+            multiline: False
+            input_filter: "int"
+            hint_text: "こたえをいれてね"
+            size_hint_y: None
+            height: dp(70)
+            halign: 'center'
+
+        RoundedButton:
+            id: submit_btn
+            text: root.button_text
+            font_size: dp(32)
+            on_press: root.on_button_press(answer_input)
+            size_hint_y: None
+            height: dp(80)
+
+
+
+# --------------------
+# 社会モード
+# --------------------
+<SocialScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(80)
+            spacing: 15
+            padding: [15, 10]
+            
+            Label:
+                text: "社会 (しゃかい)"
+                font_name: "fonts/Kosugi-Regular.ttf"
+                font_size: dp(40)
+                bold: True
+                color: PRIMARY_COLOR
+                outline_width: dp(2)
+                outline_color: WHITE_COLOR
+            
+            
+            RoundedButton:
+                text: "戻る"
+                on_press: app.root.current = "main"
+                font_size: dp(20)
+
+        ScreenManager:
+            id: social_inner
+            SocialQAScreen:
+                name: "qa"
+
+# --------------------
+# 理科モード
+# --------------------
+<ScienceScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(80)
+            spacing: 15
+            padding: [15, 10]
+            
+            Label:
+                text: "理科 (りか)"
+                font_name: "fonts/Kosugi-Regular.ttf"
+                font_size: dp(40)
+                bold: True
+                color: PRIMARY_COLOR
+                outline_width: dp(2)
+                outline_color: WHITE_COLOR
+            
+            
+            RoundedButton:
+                text: "戻る"
+                on_press: app.root.current = "main"
+                font_size: dp(20)
+
+        ScreenManager:
+            id: science_inner
+            ScienceQAScreen:
+                name: "qa"
+
+# --------------------
+# ポイント画面
+# --------------------
+<RewardScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 15
+
+        Label:
+            text: "いまのポイント"
+            font_size: dp(32)
+            color: PRIMARY_COLOR
+            size_hint_y: None
+            height: dp(50)
+            bold: True
+
+        CardLayout:
+            size_hint_y: None
+            height: 320
+            
+            GridLayout:
+                cols: 2
+                spacing: 15
+                padding: 20
+                
+                Label:
+                    text: "ごうけい"
+                    font_size: dp(32)
+                    color: TEXT_COLOR
+                    text_size: self.size
+                    halign: 'right'
+                    valign: 'middle'
+                Label:
+                    text: root.total_point
+                    font_size: dp(64)
+                    color: ACCENT_COLOR
+                    bold: True
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'middle'
+
+                Label:
+                    text: "さんすう"
+                    font_size: dp(24)
+                    color: TEXT_COLOR
+                    text_size: self.size
+                    halign: 'right'
+                    valign: 'middle'
+                Label:
+                    text: root.math_point
+                    font_size: dp(32)
+                    color: PRIMARY_COLOR
+                    bold: True
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'middle'
+
+                Label:
+                    text: "しゃかい"
+                    font_size: dp(24)
+                    color: TEXT_COLOR
+                    text_size: self.size
+                    halign: 'right'
+                    valign: 'middle'
+                Label:
+                    text: root.social_point
+                    font_size: dp(32)
+                    color: SECONDARY_COLOR
+                    bold: True
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'middle'
+
+                Label:
+                    text: "りか"
+                    font_size: dp(24)
+                    color: TEXT_COLOR
+                    text_size: self.size
+                    halign: 'right'
+                    valign: 'middle'
+                Label:
+                    text: root.science_point
+                    font_size: dp(32)
+                    color: hex("#9B59B6")
+                    bold: True
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'middle'
+
+        BoxLayout:
+            size_hint_y: 1
+
+        RoundedButton:
+            text: "戻る"
+            font_size: dp(32)
+            size_hint_y: None
+            height: dp(60)
+            on_press: app.root.current = "main"
+
+        RoundedButton:
+            text: "リセット"
+            font_size: dp(24)
+            size_hint_y: None
+            height: dp(60)
+            on_press: root.confirm_reset()
+
+<SocialQAScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 10
+
+        Label:
+            id: header_label
+            text: "もんだい"
+            font_size: dp(24)
+            color: PRIMARY_COLOR
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        CardLabel:
+            text: root.question_text
+            font_size: dp(28)
+            text_size: self.width - 40, None
+            size_hint_y: 0.5
+            halign: 'left'
+            valign: 'middle'
+            padding: [20, 20]
+
+        Label:
+            text: root.choices_text
+            font_size: dp(24)
+            text_size: self.width, None
+            size_hint_y: None
+            height: dp(80)
+            halign: 'center'
+            valign: 'middle'
+            color: TEXT_COLOR
+            bold: True
+
+        TextInput:
+            id: answer_input
+            font_size: dp(32)
+            multiline: False
+            input_type: 'text'
+            input_filter: None
+            hint_text: "こたえをいれてね"
+            size_hint_y: None
+            height: dp(70)
+            halign: 'center'
+
+        RoundedButton:
+            id: submit_btn
+            text: root.button_text
+            font_size: dp(32)
+            on_press: root.on_button_press(answer_input)
+            size_hint_y: None
+            height: dp(80)
+
+
+
+            bold: True
+
+<ScienceQAScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 10
+
+        Label:
+            id: header_label
+            text: "もんだい"
+            font_size: dp(24)
+            color: PRIMARY_COLOR
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        CardLabel:
+            text: root.question_text
+            font_size: dp(28)
+            text_size: self.width - 40, None
+            size_hint_y: 0.5
+            halign: 'left'
+            valign: 'middle'
+            padding: [20, 20]
+
+        Label:
+            text: root.choices_text
+            font_size: dp(24)
+            text_size: self.width, None
+            size_hint_y: None
+            height: dp(80)
+            halign: 'center'
+            valign: 'middle'
+            color: TEXT_COLOR
+            bold: True
+
+        TextInput:
+            id: answer_input
+            font_size: dp(32)
+            multiline: False
+            input_type: 'text'
+            input_filter: None
+            hint_text: "こたえをいれてね"
+            size_hint_y: None
+            height: dp(70)
+            halign: 'center'
+
+        RoundedButton:
+            id: submit_btn
+            text: root.button_text
+            font_size: dp(32)
+            on_press: root.on_button_press(answer_input)
+            size_hint_y: None
+            height: dp(80)
+
+
+
+            bold: True
+
+# --------------------
+# 設定画面
+# --------------------
+<SettingsScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 30
+
+        Label:
+            text: "なんいどせってい"
+            font_size: dp(32)
+            color: PRIMARY_COLOR
+            size_hint_y: None
+            height: dp(50)
+            bold: True
+
+        CardLayout:
+            size_hint_y: None
+            height: 450
+            padding: 20
+            spacing: 20
+            
+            BoxLayout:
+                orientation: "horizontal"
+                spacing: 20
+                size_hint_y: 0.2
+                
+                Label:
+                    text: "レベル："
+                    font_size: dp(32)
+                    color: TEXT_COLOR
+                    size_hint_x: 0.4
+                
+                Label:
+                    text: root.difficulty_text
+                    font_size: dp(64)
+                    color: ACCENT_COLOR
+                    bold: True
+                    size_hint_x: 0.2
+                
+            Slider:
+                min: 1
+                max: 6
+                step: 1
+                value: root.difficulty_value
+                on_value: root.on_value_change(self, self.value)
+                cursor_size: (40, 40)
+                size_hint_y: 0.2
+
+            Label:
+                text: "（レベル1〜6）"
+                font_size: dp(20)
+                color: hex("#7F8C8D")
+                size_hint_y: 0.1
+
+            Widget:
+                size_hint_y: None
+                height: dp(20)
+
+            Label:
+                text: "おなまえ：" + root.username_text
+                font_size: dp(24)
+                color: TEXT_COLOR
+                size_hint_y: 0.15
+
+            RoundedButton:
+                text: "なまえをかえる"
+                font_size: dp(24)
+                size_hint_y: 0.15
+                on_press: root.open_username_popup()
+
+        BoxLayout:
+            size_hint_y: 1
+
+        RoundedButton:
+            text: "保存して戻る"
+            font_size: dp(32)
+            size_hint_y: None
+            height: dp(80)
+            on_press: 
+                root.save_settings()
+                app.root.current = "main"
+
+# --------------------
+# ルートのScreenManager
+# --------------------
+<RootWidget>:
+    SplashScreen:
+        name: "splash"
+    MainScreen:
+        name: "main"
+    MathScreen:
+        name: "math"
+    SocialScreen:
+        name: "social"
+    ScienceScreen:
+        name: "science"
+    RewardScreen:
+        name: "reward"
+    SettingsScreen:
+        name: "settings"
+
+<UserNamePopup>:
+    title: "おなまえをおしえてね"
+    title_size: 24
+    size_hint: 0.8, 0.4
+    auto_dismiss: False
+    background: ""
+    background_color: [1, 1, 1, 1]
+    separator_height: 0
+    input_text: name_input
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 20
+        canvas.before:
+            Color:
+                rgba: WHITE_COLOR
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [20]
+        
+        Label:
+            text: "きみのなまえはなんていうの？"
+            font_size: dp(20)
+            color: TEXT_COLOR
+        
+        TextInput:
+            id: name_input
+            multiline: False
+            font_size: dp(24)
+            size_hint_y: None
+            height: dp(50)
+            hint_text: "ここになまえをいれてね"
+            input_type: 'text'
+            input_filter: None
+        
+        RoundedButton:
+            text: "これできまり！"
+            font_size: dp(24)
+            size_hint_y: None
+            height: dp(60)
+            on_release: root.save_name()
