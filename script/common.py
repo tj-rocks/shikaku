@@ -25,7 +25,14 @@ def get_writable_file_path(filename):
     if not os.path.exists(target_path):
         source_path = os.path.join(base_dir, "json", filename)
         if os.path.exists(source_path):
-             shutil.copy2(source_path, target_path)
+            try:
+                shutil.copy2(source_path, target_path)
+            except Exception as e:
+                print(f"Error copying file {filename}: {e}")
+                # Fallback: try to just open and write if copy fails?
+                # Or just return None/source path so at least we can read?
+                # For now just print error.
+                pass
              
     return target_path
 
@@ -34,8 +41,12 @@ def get_settings(value):
 
     if os.path.exists(setting_path):
         with open(setting_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            return data[value]
+            try:
+                data = json.load(f)
+                return data.get(value)
+            except json.JSONDecodeError:
+                 print(f"JSON Decode Error in {setting_path}")
+                 return None
     else:
         return None
 
@@ -61,7 +72,10 @@ def get_rewards():
     path = get_writable_file_path("rewards.json")
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return None
     return None
 
 def add_reward(subject,point):

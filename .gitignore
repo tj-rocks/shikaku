@@ -8,5 +8,4 @@ venv/
 venv310/
 .venv/
 .buildozer/
-bin/
 .DS_Store

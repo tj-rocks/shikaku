@@ -92,7 +92,7 @@
                 radius: [20]
         
         Label:
-            text: "ほんとうにリセットしてもいい？"
+            text: "リセットするよ"
             font_size: dp(24)
             color: TEXT_COLOR
         
@@ -184,17 +184,17 @@
             size_hint_y: 1
             
             RoundedButton:
-                text: "算数 (さんすう)"
+                text: "さんすう"
                 font_size: dp(32)
                 on_press: app.root.current = "math"
 
             RoundedButton:
-                text: "社会 (しゃかい)"
+                text: "しゃかい"
                 font_size: dp(32)
                 on_press: app.root.current = "social"
 
             RoundedButton:
-                text: "理科 (りか)"
+                text: "りか"
                 font_size: dp(32)
                 on_press: app.root.current = "science"
 
@@ -271,19 +271,15 @@
         padding: [40, dp(5), 40, dp(75)]
         spacing: 15
 
+        Widget:
+            size_hint_y: 1
 
-
-        Label:
-            id: header_label
-            text: "もんだい"
-            font_size: dp(24)
-            color: PRIMARY_COLOR
-            size_hint_y: None
-            height: self.texture_size[1]
+        Widget:
+            size_hint_y: 1
 
         CardLabel:
             text: root.question_text
-            font_size: dp(64)
+            font_size: root.question_font_size
             size_hint_y: None
             height: 150
             bold: True
@@ -293,7 +289,7 @@
 
         TextInput:
             id: answer_input
-            font_size: dp(40)
+            font_size: dp(24)
             multiline: False
             input_filter: "int"
             hint_text: "こたえをいれてね"
@@ -304,7 +300,7 @@
         RoundedButton:
             id: submit_btn
             text: root.button_text
-            font_size: dp(32)
+            font_size: dp(24)
             on_press: root.on_button_press(answer_input)
             size_hint_y: None
             height: dp(80)
@@ -326,13 +322,7 @@
         padding: 40
         spacing: 15
 
-        Label:
-            id: header_label
-            text: "もんだい"
-            font_size: dp(24)
-            color: PRIMARY_COLOR
-            size_hint_y: None
-            height: self.texture_size[1]
+
 
         CardLabel:
             text: root.question_text
@@ -345,7 +335,7 @@
 
         TextInput:
             id: answer_input
-            font_size: dp(32)
+            font_size: dp(24)
             multiline: False
             input_filter: "int"
             hint_text: "こたえをいれてね"
@@ -356,7 +346,7 @@
         RoundedButton:
             id: submit_btn
             text: root.button_text
-            font_size: dp(32)
+            font_size: dp(24)
             on_press: root.on_button_press(answer_input)
             size_hint_y: None
             height: dp(80)
@@ -384,9 +374,9 @@
             padding: [15, 10]
             
             Label:
-                text: "社会 (しゃかい)"
+                text: "しゃかい"
                 font_name: "fonts/Kosugi-Regular.ttf"
-                font_size: dp(40)
+                font_size: dp(20)
                 bold: True
                 color: PRIMARY_COLOR
                 outline_width: dp(2)
@@ -424,9 +414,9 @@
             padding: [15, 10]
             
             Label:
-                text: "理科 (りか)"
+                text: "りか"
                 font_name: "fonts/Kosugi-Regular.ttf"
-                font_size: dp(40)
+                font_size: dp(20)
                 bold: True
                 color: PRIMARY_COLOR
                 outline_width: dp(2)
@@ -469,76 +459,150 @@
 
         CardLayout:
             size_hint_y: None
-            height: 320
+            height: dp(400)
             
-            GridLayout:
-                cols: 2
-                spacing: 15
-                padding: 20
+            BoxLayout:
+                orientation: 'vertical'
+                padding: [dp(20), dp(10)]
+                spacing: dp(5)
+
+                # Header
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(40)
+                    Label:
+                        text: "かもく"
+                        font_size: dp(20)
+                        color: TEXT_COLOR
+                        bold: True
+                        halign: 'center'
+                    Label:
+                        text: "ポイント"
+                        font_size: dp(20)
+                        color: TEXT_COLOR
+                        bold: True
+                        halign: 'center'
                 
-                Label:
-                    text: "ごうけい"
-                    font_size: dp(32)
-                    color: TEXT_COLOR
-                    text_size: self.size
-                    halign: 'right'
-                    valign: 'middle'
-                Label:
-                    text: root.total_point
-                    font_size: dp(64)
-                    color: ACCENT_COLOR
-                    bold: True
-                    text_size: self.size
-                    halign: 'left'
-                    valign: 'middle'
+                Widget:
+                    size_hint_y: None
+                    height: dp(2)
+                    canvas:
+                        Color:
+                            rgba: TEXT_COLOR
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
 
-                Label:
-                    text: "さんすう"
-                    font_size: dp(24)
-                    color: TEXT_COLOR
-                    text_size: self.size
-                    halign: 'right'
-                    valign: 'middle'
-                Label:
-                    text: root.math_point
-                    font_size: dp(32)
-                    color: PRIMARY_COLOR
-                    bold: True
-                    text_size: self.size
-                    halign: 'left'
-                    valign: 'middle'
+                # Rows
+                BoxLayout:
+                    # Total
+                    Label:
+                        text: "ごうけい"
+                        font_size: dp(24)
+                        color: TEXT_COLOR
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        padding_x: dp(20)
+                    Label:
+                        text: root.total_point
+                        font_size: dp(32)
+                        color: ACCENT_COLOR
+                        bold: True
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+                        padding_x: dp(20)
 
-                Label:
-                    text: "しゃかい"
-                    font_size: dp(24)
-                    color: TEXT_COLOR
-                    text_size: self.size
-                    halign: 'right'
-                    valign: 'middle'
-                Label:
-                    text: root.social_point
-                    font_size: dp(32)
-                    color: SECONDARY_COLOR
-                    bold: True
-                    text_size: self.size
-                    halign: 'left'
-                    valign: 'middle'
+                Widget:
+                    size_hint_y: None
+                    height: dp(1)
+                    canvas:
+                        Color:
+                            rgba: [0.8, 0.8, 0.8, 1]
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
 
-                Label:
-                    text: "りか"
-                    font_size: dp(24)
-                    color: TEXT_COLOR
-                    text_size: self.size
-                    halign: 'right'
-                    valign: 'middle'
-                Label:
-                    text: root.science_point
-                    font_size: dp(32)
-                    color: hex("#9B59B6")
-                    bold: True
-                    text_size: self.size
-                    halign: 'left'
-                    valign: 'middle'
+                BoxLayout:
+                    # Math
+                    Label:
+                        text: "さんすう"
+                        font_size: dp(20)
+                        color: TEXT_COLOR
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        padding_x: dp(20)
+                    Label:
+                        text: root.math_point
+                        font_size: dp(24)
+                        color: PRIMARY_COLOR
+                        bold: True
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+                        padding_x: dp(20)
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(1)
+                    canvas:
+                        Color:
+                            rgba: [0.8, 0.8, 0.8, 1]
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+                BoxLayout:
+                    # Social
+                    Label:
+                        text: "しゃかい"
+                        font_size: dp(20)
+                        color: TEXT_COLOR
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        padding_x: dp(20)
+                    Label:
+                        text: root.social_point
+                        font_size: dp(24)
+                        color: SECONDARY_COLOR
+                        bold: True
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+                        padding_x: dp(20)
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(1)
+                    canvas:
+                        Color:
+                            rgba: [0.8, 0.8, 0.8, 1]
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+                BoxLayout:
+                    # Science
+                    Label:
+                        text: "りか"
+                        font_size: dp(20)
+                        color: TEXT_COLOR
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        padding_x: dp(20)
+                    Label:
+                        text: root.science_point
+                        font_size: dp(24)
+                        color: hex("#9B59B6")
+                        bold: True
+                        halign: 'right'
+                        valign: 'middle'
+                        text_size: self.size
+                        padding_x: dp(20)
 
         BoxLayout:
             size_hint_y: 1
@@ -570,13 +634,7 @@
         padding: 40
         spacing: 10
 
-        Label:
-            id: header_label
-            text: "もんだい"
-            font_size: dp(24)
-            color: PRIMARY_COLOR
-            size_hint_y: None
-            height: self.texture_size[1]
+
 
         CardLabel:
             text: root.question_text
@@ -600,7 +658,7 @@
 
         TextInput:
             id: answer_input
-            font_size: dp(32)
+            font_size: dp(24)
             multiline: False
             input_type: 'text'
             input_filter: None
@@ -612,7 +670,7 @@
         RoundedButton:
             id: submit_btn
             text: root.button_text
-            font_size: dp(32)
+            font_size: dp(24)
             on_press: root.on_button_press(answer_input)
             size_hint_y: None
             height: dp(80)
@@ -634,13 +692,7 @@
         padding: 40
         spacing: 10
 
-        Label:
-            id: header_label
-            text: "もんだい"
-            font_size: dp(24)
-            color: PRIMARY_COLOR
-            size_hint_y: None
-            height: self.texture_size[1]
+
 
         CardLabel:
             text: root.question_text
@@ -664,7 +716,7 @@
 
         TextInput:
             id: answer_input
-            font_size: dp(32)
+            font_size: dp(24)
             multiline: False
             input_type: 'text'
             input_filter: None
@@ -676,7 +728,7 @@
         RoundedButton:
             id: submit_btn
             text: root.button_text
-            font_size: dp(32)
+            font_size: dp(24)
             on_press: root.on_button_press(answer_input)
             size_hint_y: None
             height: dp(80)
@@ -758,11 +810,28 @@
                 color: TEXT_COLOR
                 size_hint_y: 0.15
 
+            Widget:
+                size_hint_y: None
+                height: dp(20)
+
             RoundedButton:
                 text: "なまえをかえる"
                 font_size: dp(24)
-                size_hint_y: 0.15
+                size_hint_y: None
+                height: dp(70)
                 on_press: root.open_username_popup()
+                canvas.before:
+                    Color:
+                        rgba: PRIMARY_COLOR
+                    Line:
+                        width: dp(2)
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(20))
+                    Color:
+                        rgba: (0, 0, 0, 0.1) if self.state == 'down' else (0, 0, 0, 0)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(20)]
 
         BoxLayout:
             size_hint_y: 1

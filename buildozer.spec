@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = ShikakuNoKeisan
+title = ShikakuMondai
 
 # (str) Package name
-package.name = shikakunokeisan
+package.name = shikaku_mondai
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test

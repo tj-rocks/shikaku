@@ -2,6 +2,10 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.image import Image
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 from kivy.lang import Builder
 from kivy.factory import Factory
@@ -34,6 +38,39 @@ class SplashScreen(Screen):
 class MainScreen(Screen):
     pass
 
+class FeedbackPopup(Popup):
+    def __init__(self, message, is_correct=False, **kwargs):
+        super().__init__(**kwargs)
+        self.title = "" # No title
+        self.separator_height = 0
+        self.title_height = 0
+        self.size_hint = (0.8, 0.4)
+        self.auto_dismiss = True
+        self.background = ""
+        self.background_color = [1, 1, 1, 1]  # White background
+        
+        content = BoxLayout(orientation='vertical', padding=dp(20), spacing=dp(20))
+        
+        if is_correct:
+            img = Image(source="images/cracker.png", size_hint_y=None, height=dp(100))
+            content.add_widget(img)
+        else:
+            img = Image(source="images/sad_face.png", size_hint_y=None, height=dp(100))
+            content.add_widget(img)
+
+        self.label = Label(
+            text=message,
+            font_size=dp(24),
+            bold=True,
+            color=[0, 0, 0, 1] # Black text
+        )
+        content.add_widget(self.label)
+        self.content = content
+
+    def on_open(self):
+        Clock.schedule_once(self.dismiss, 2)
+
+
 # --------------------
 # 算数モード
 # --------------------
@@ -45,10 +82,39 @@ class MathCalcScreen(Screen):
     params = None # 問題生成クラスのインスタンス
     RESULT_FONT_SIZE = dp(48)
     HEADER_FONT_SIZE = dp(24)
+    question_font_size = NumericProperty(dp(56)) # Default font size
+
+    def on_question_text(self, instance, value):
+        # Adjust font size based on length
+        length = len(value)
+        if length > 12:
+            self.question_font_size = dp(32)
+        elif length > 8:
+            self.question_font_size = dp(40)
+        elif length > 5:
+            self.question_font_size = dp(48)
+        else:
+            self.question_font_size = dp(56)
 
     def on_pre_enter(self):
         # 画面が表示される直前に新しい問題を作る
-        self.create_question()
+        if not self.question_text:
+           self.create_question()
+        
+        self.button_text = "けってい"
+        self.is_correct = False
+
+    def on_enter(self):
+        Window.bind(on_keyboard_height=self.on_keyboard_height)
+
+    def on_leave(self):
+        Window.unbind(on_keyboard_height=self.on_keyboard_height)
+
+    def on_keyboard_height(self, window, height):
+        # キーボードが閉じられた(高さ0)ときに、入力欄のフォーカスを外す
+        # これにより、再度タップしたときにキーボードが出るようになる
+        if height == 0:
+            self.ids.answer_input.focus = False
 
     def on_button_press(self, answer_input):
         """ボタンが押された時の処理（2段階）"""
@@ -68,31 +134,22 @@ class MathCalcScreen(Screen):
 
             if int(ans) == correct_val:
                 common.add_reward("math", 1)
-                self.ids.header_label.text = "せいかい！！ ◎"
-                self.ids.header_label.color = ACCENT_COLOR
-                self.ids.header_label.bold = True
-                self.ids.header_label.font_size = self.RESULT_FONT_SIZE
+                FeedbackPopup(message="せいかい！！ ◎", is_correct=True).open()
                 self.button_text = "次へ"
                 self.is_correct = True
             else:
-                self.ids.header_label.text = "ちがうよ"
-                self.ids.header_label.color = ACCENT_COLOR
-                self.ids.header_label.bold = True
-                self.ids.header_label.font_size = self.RESULT_FONT_SIZE
+                print(f"DEBUG: Wrong Answer. ans={ans}, correct={correct_val}")
+                FeedbackPopup(message="ちがうよ", is_correct=False).open()
         except Exception as e:
-            self.ids.header_label.text = "数字をいれてね"
-            self.ids.header_label.color = ACCENT_COLOR
-            self.ids.header_label.bold = True
-            self.ids.header_label.font_size = self.RESULT_FONT_SIZE
+            import traceback
+            traceback.print_exc()
+            print(f"DEBUG: Exception in check_answer: {e}, ans='{ans}'")
+            FeedbackPopup(message="数字をいれてね", is_correct=False).open()
 
     def next_question(self, answer_input):
         """次の問題を表示"""
         self.is_correct = False
         self.button_text = "けってい"
-        self.ids.header_label.text = "もんだい"
-        self.ids.header_label.color = PRIMARY_COLOR
-        self.ids.header_label.bold = False
-        self.ids.header_label.font_size = self.HEADER_FONT_SIZE
         answer_input.text = ""
         self.create_question()
 
@@ -114,6 +171,8 @@ class MathTextScreen(Screen):
 
     def on_pre_enter(self):
         self.create_question()
+        self.button_text = "けってい"
+        self.is_correct = False
 
     def on_button_press(self, answer_input):
         if not self.is_correct:
@@ -129,30 +188,17 @@ class MathTextScreen(Screen):
             
             if int(ans) == correct_val:
                 common.add_reward("math", 1)
-                self.ids.header_label.text = "せいかい！！ ◎"
-                self.ids.header_label.color = ACCENT_COLOR
-                self.ids.header_label.bold = True
-                self.ids.header_label.font_size = dp(48)
+                FeedbackPopup(message="せいかい！！ ◎", is_correct=True).open()
                 self.button_text = "次へ"
                 self.is_correct = True
             else:
-                self.ids.header_label.text = "ちがうよ"
-                self.ids.header_label.color = ACCENT_COLOR
-                self.ids.header_label.bold = True
-                self.ids.header_label.font_size = dp(48)
+                FeedbackPopup(message="ちがうよ", is_correct=False).open()
         except Exception as e:
-            self.ids.header_label.text = "数字をいれてね"
-            self.ids.header_label.color = ACCENT_COLOR
-            self.ids.header_label.bold = True
-            self.ids.header_label.font_size = 48
+            FeedbackPopup(message="数字をいれてね", is_correct=False).open()
 
     def next_question(self, answer_input):
         self.is_correct = False
         self.button_text = "けってい"
-        self.ids.header_label.text = "もんだい"
-        self.ids.header_label.color = PRIMARY_COLOR
-        self.ids.header_label.bold = False
-        self.ids.header_label.font_size = dp(24)
         answer_input.text = ""
         self.create_question()
 
@@ -183,6 +229,8 @@ class SocialQAScreen(Screen):
 
     def on_pre_enter(self):
         self.create_question()
+        self.button_text = "けってい"
+        self.is_correct = False
 
     def on_button_press(self, answer_input):
         if not self.is_correct:
@@ -198,29 +246,17 @@ class SocialQAScreen(Screen):
             # Remove spaces from answer just in case
             if ans.strip() == correct_val:
                 common.add_reward("social", 1)
-                self.ids.header_label.text = "せいかい！！ ◎"
-                self.ids.header_label.color = ACCENT_COLOR
-                self.ids.header_label.bold = True
-                self.ids.header_label.font_size = dp(48)
+                FeedbackPopup(message="せいかい！！ ◎", is_correct=True).open()
                 self.button_text = "次へ"
                 self.is_correct = True
             else:
-                self.ids.header_label.text = "！！ちがうよ！！"
-                self.ids.header_label.color = ACCENT_COLOR
-                self.ids.header_label.bold = True
-                self.ids.header_label.font_size = dp(48)
+                FeedbackPopup(message="ちがうよ", is_correct=False).open()
         except Exception as e:
-            self.ids.header_label.text = "文字をいれてね"
-            self.ids.header_label.color = ACCENT_COLOR
-            self.ids.header_label.bold = True
-            self.ids.header_label.font_size = 48
+            FeedbackPopup(message="文字をいれてね", is_correct=False).open()
 
     def next_question(self, answer_input):
         self.is_correct = False
         self.button_text = "けってい"
-        self.ids.header_label.text = "もんだい"
-        self.ids.header_label.color = PRIMARY_COLOR
-        self.ids.header_label.bold = False
         answer_input.text = ""
         self.create_question()
 
@@ -255,6 +291,8 @@ class ScienceQAScreen(Screen):
 
     def on_pre_enter(self):
         self.create_question()
+        self.button_text = "けってい"
+        self.is_correct = False
 
     def on_button_press(self, answer_input):
         if not self.is_correct:
@@ -269,31 +307,18 @@ class ScienceQAScreen(Screen):
             correct_val = self.params.get("answer")
             if ans.strip() == correct_val:
                 common.add_reward("science", 1)
-                self.ids.header_label.text = "せいかい！！ ◎"
-                self.ids.header_label.color = ACCENT_COLOR
-                self.ids.header_label.bold = True
-                self.ids.header_label.font_size = dp(48)
+                FeedbackPopup(message="せいかい！！ ◎", is_correct=True).open()
                 self.button_text = "次へ"
                 self.is_correct = True
             else:
-                self.ids.header_label.text = "ちがうよ"
-                self.ids.header_label.color = ACCENT_COLOR
-                self.ids.header_label.bold = True
-                self.ids.header_label.font_size = dp(48)
+                FeedbackPopup(message="ちがうよ", is_correct=False).open()
         except Exception as e:
-            self.ids.header_label.text = "文字をいれてね"
-            self.ids.header_label.color = ACCENT_COLOR
-            self.ids.header_label.bold = True
-            self.ids.header_label.font_size = dp(48)
+            FeedbackPopup(message="文字をいれてね", is_correct=False).open()
 
     def next_question(self, answer_input):
         self.is_correct = False
         self.button_text = "けってい"
-        self.ids.header_label.text = "もんだい"
-        self.ids.header_label.color = PRIMARY_COLOR
-        self.ids.header_label.bold = False
         answer_input.text = ""
-        self.create_question()
 
     def create_question(self):
         creator = ScienceQuestionCreator()
@@ -410,12 +435,17 @@ class ShikakuApp(App):
         return RootWidget()
 
     def on_start(self):
-        # ユーザー名が設定されているか確認
-        username = common.get_settings("username")
-        if username is None:
-            # ユーザー名未設定ならポップアップを表示
-            # Clock.schedule_once を使って描画後に表示する
-            Clock.schedule_once(lambda dt: self.show_username_popup(), 0.5)
+        try:
+            # ユーザー名が設定されているか確認
+            username = common.get_settings("username")
+            if username is None:
+                # ユーザー名未設定ならポップアップを表示
+                # Clock.schedule_once を使って描画後に表示する
+                Clock.schedule_once(lambda dt: self.show_username_popup(), 0.5)
+        except Exception as e:
+            print(f"Error in on_start: {e}")
+            import traceback
+            traceback.print_exc()
             
     def show_username_popup(self):
         UserNamePopup().open()
